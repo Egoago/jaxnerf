@@ -121,7 +121,7 @@ class NerfModel(nn.Module):
     rgb = self.rgb_activation(raw_rgb)
     sigma = self.sigma_activation(raw_sigma)
     # Volumetric rendering.
-    comp_rgb, disp, acc, weights = model_utils.volumetric_rendering(
+    comp_rgb, depth, weights = model_utils.volumetric_rendering(
         rgb,
         sigma,
         z_vals,
@@ -129,7 +129,7 @@ class NerfModel(nn.Module):
         white_bkgd=self.white_bkgd,
     )
     ret = [
-        (comp_rgb, disp, acc),
+        (comp_rgb, depth),
     ]
     # Hierarchical sampling based on coarse predictions
     if self.num_fine_samples > 0:
@@ -176,14 +176,14 @@ class NerfModel(nn.Module):
       )
       rgb = self.rgb_activation(raw_rgb)
       sigma = self.sigma_activation(raw_sigma)
-      comp_rgb, disp, acc, unused_weights = model_utils.volumetric_rendering(
+      comp_rgb, depth, weights = model_utils.volumetric_rendering(
           rgb,
           sigma,
           z_vals,
           rays.directions,
           white_bkgd=self.white_bkgd,
       )
-      ret.append((comp_rgb, disp, acc))
+      ret.append((comp_rgb, depth))
     return ret
 
 

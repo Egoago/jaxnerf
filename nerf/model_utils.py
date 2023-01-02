@@ -195,15 +195,7 @@ def volumetric_rendering(rgb, sigma, z_vals, dirs, white_bkgd):
 
   comp_rgb = (weights[Ellipsis, None] * rgb).sum(axis=-2)
   depth = (weights * z_vals).sum(axis=-1)
-  acc = weights.sum(axis=-1)
-  # Equivalent to (but slightly more efficient and stable than):
-  #  disp = 1 / max(eps, where(acc > eps, depth / acc, 0))
-  inv_eps = 1 / eps
-  disp = acc / depth
-  disp = jnp.where((disp > 0) & (disp < inv_eps) & (acc > eps), disp, inv_eps)
-  if white_bkgd:
-    comp_rgb = comp_rgb + (1. - acc[Ellipsis, None])
-  return comp_rgb, disp, acc, weights
+  return comp_rgb, depth, weights
 
 
 def piecewise_constant_pdf(key, bins, weights, num_samples, randomized):
